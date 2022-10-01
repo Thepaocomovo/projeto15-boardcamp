@@ -1,25 +1,25 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import pg from 'pg';
+// import connection from "./database/PgConnection.js";
 
-dotenv.config(); 
+import categoriesRouter from "./routers/Categories.routes.js";
+
+dotenv.config();
 const server = express();
 
 server.use(express.json());
 server.use(cors());
 
-const { Pool } = pg;
+server.use(categoriesRouter);
 
-const connection = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+server.get("/status", (req, res) => {
+  res.sendStatus(200);
+});
 
-  server.get("/status", (req, res) => {
-    res.sendStatus(200);
-  });
-
-  // server.get("/status", async (req, res) => {
-  //   const teste = await connection.query("SELECT * FROM games;");
+// server.get("/status", async (req, res) => {
+//   const teste = await connection.query("SELECT * FROM games;");
+//   res.status(200).send(teste.rows);
+// });
 
 server.listen(process.env.PORT, () => { console.log(`listen on ${process.env.PORT}`) });

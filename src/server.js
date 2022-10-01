@@ -4,6 +4,7 @@ import cors from "cors";
 // import connection from "./database/PgConnection.js";
 
 import categoriesRouter from "./routers/Categories.routes.js";
+import gamesRouter from "./routers/Games.routes.js";
 
 dotenv.config();
 const server = express();
@@ -12,6 +13,7 @@ server.use(express.json());
 server.use(cors());
 
 server.use(categoriesRouter);
+server.use(gamesRouter);
 
 server.get("/status", (req, res) => {
   res.sendStatus(200);

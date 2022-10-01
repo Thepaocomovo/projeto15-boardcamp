@@ -10,12 +10,9 @@ const newCategorieSchema = joi.object({
 
 const HasValidCategorie = async (req, res, next) => {
     const { name } = req.body;
-    if (name !== undefined) {
-        if (name.length < 1) return res.sendStatus(StatusCodes.BAD_REQUEST);
-    }
     const validation = newCategorieSchema.validate({ name }, { abortEarly: false });
     if (validation.error) {
-        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(validation.error.message);
+        return res.status(StatusCodes.BAD_REQUEST).send(validation.error.message);
     }
     const newCategorie = {
         name: stripHtml(name).result

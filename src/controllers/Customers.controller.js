@@ -56,7 +56,8 @@ const createCustomers = async (req, res) => {
         await connection.query(`
         INSERT INTO customers 
         (name, phone, cpf, birthday) 
-        VALUES ($1, $2, $3, $4);`, [name, phone, cpf, birthday]);
+        VALUES ($1, $2, $3, $4);`, [name, phone, cpf, birthday]
+        );
         return res.sendStatus(StatusCodes.CREATED)
     } catch (error) {
         console.log(error);
@@ -65,5 +66,27 @@ const createCustomers = async (req, res) => {
     res.sendStatus(StatusCodes.CREATED);
 };
 
+const updateUser = async (req, res) => {
+    const { name, phone, cpf, birthday } = res.locals.newCustomer;
+    const id = req.params.id;
+    
 
-export { getCustomers, createCustomers, getCustomersById }
+    console.log(name, phone, cpf, birthday)
+    try {
+        await connection.query(`
+            UPDATE customers 
+            SET name = $1, phone = $2, cpf = $3, birthday = $4  
+            WHERE id = $5;
+            `, [name, phone, cpf, birthday, id]
+        );
+        return res.sendStatus(StatusCodes.OK);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+    
+    
+    return res.sendStatus(422);
+}
+
+export { getCustomers, getCustomersById, createCustomers, updateUser }

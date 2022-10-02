@@ -20,12 +20,32 @@ const getCustomers = async (req, res) => {
     try {
         const customersList = await connection.query(`
             SELECT * FROM customers;
-
         `);
         return res.status(StatusCodes.OK).send(customersList.rows)
     } catch (error) {
         console.log(error);
         res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+const getCustomersById = async (req, res) => {
+    const id = req.params.id;
+    if(!Number(id)){
+        return res.sendStatus(StatusCodes.BAD_REQUEST)
+    }
+    try {
+        const costumer = await connection.query(`
+        SELECT *
+        FROM customers
+        WHERE id = $1;`, [`${id}`]
+        );
+
+        if(costumer.rows.length < 1) return res.sendStatus(StatusCodes.NOT_FOUND);
+
+        return res.status(StatusCodes.OK).send(costumer.rows);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
@@ -46,4 +66,4 @@ const createCustomers = async (req, res) => {
 };
 
 
-export { getCustomers, createCustomers }
+export { getCustomers, createCustomers, getCustomersById }

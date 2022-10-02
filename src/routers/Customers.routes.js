@@ -7,6 +7,7 @@ import existentUser from "../middlewares/ExistentUser.middleware.js";
 const router = express.Router();
 
 router.get("/customers", customersController.getCustomers);
+router.get("/customers/:id", customersController.getCustomersById);
 router.post("/customers", validCustomer, existentUser, customersController.createCustomers);
 
 

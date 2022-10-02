@@ -37,7 +37,6 @@ const gameRequirements = async (req, res, next) => {
     name = stripHtml(name.toLowerCase()).result;
     image = stripHtml(image).result;
   
-    
     try {
         const existentGame = await connection.query(`SELECT * FROM games WHERE name = $1`, [name]);
         if (existentGame.rows.length > 0) {

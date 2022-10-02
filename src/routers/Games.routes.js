@@ -5,7 +5,7 @@ import gameRequirements from "../middlewares/GamesRequirements.middleware.js";
 
 const router = express.Router();
 
-// router.get("/games", gamesController.getCategories);
+router.get("/games", gamesController.getGames);
 router.post("/games", gameRequirements, gamesController.createGames);
 
 export default router;

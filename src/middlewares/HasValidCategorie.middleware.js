@@ -5,12 +5,13 @@ import { stripHtml } from "string-strip-html";
 import connection from "../database/PgConnection.js";
 
 const newCategorieSchema = joi.object({
-    name: joi.string().required().trim(),
+    name: joi.string().required().trim()
 });
 
 const HasValidCategorie = async (req, res, next) => {
     const { name } = req.body;
     const validation = newCategorieSchema.validate({ name }, { abortEarly: false });
+
     if (validation.error) {
         return res.status(StatusCodes.BAD_REQUEST).send(validation.error.message);
     }

@@ -34,7 +34,7 @@ const gameRequirements = async (req, res, next) => {
 
         //verificar se image é valida
     
-    name = stripHtml(name).result;
+    name = stripHtml(name.toLowerCase()).result;
     image = stripHtml(image).result;
   
     

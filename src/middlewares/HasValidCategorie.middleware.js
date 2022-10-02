@@ -16,7 +16,7 @@ const HasValidCategorie = async (req, res, next) => {
         return res.status(StatusCodes.BAD_REQUEST).send(validation.error.message);
     }
     const newCategorie = {
-        name: stripHtml(name).result
+        name: stripHtml(name.toLowerCase()).result
     };
 
     try {

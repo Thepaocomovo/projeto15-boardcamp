@@ -3,6 +3,24 @@ import { StatusCodes } from "http-status-codes";
 import connection from "../database/PgConnection.js";
 
 const getGames = async (req, res) => {
+    
+    if(req.query.name) {
+        const name = req.query.name.toLowerCase();
+        try {
+            const filteredGames = await connection.query(`
+            SELECT games.*, categories.name as "categoryName" 
+            FROM games JOIN categories 
+            ON games."categoryId" = categories.id 
+            WHERE games.name LIKE $1;`, [`${name}%`]
+            );
+            return res.status(StatusCodes.OK).send(filteredGames.rows);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+
     try {
         const games = await connection.query(`
             SELECT games.*, categories.name as "categoryName"

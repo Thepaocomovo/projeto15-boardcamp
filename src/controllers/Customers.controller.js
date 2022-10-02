@@ -2,6 +2,21 @@ import { StatusCodes } from "http-status-codes";
 
 import connection from "../database/PgConnection.js";
 const getCustomers = async (req, res) => {
+    if(req.query.cpf) {
+        const costumerCPF = req.query.cpf;
+        try {
+            const costumer = await connection.query(`
+            SELECT *
+            FROM customers
+            WHERE cpf LIKE $1;`, [`${costumerCPF}%`]
+            );
+            return res.status(StatusCodes.OK).send(costumer.rows);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     try {
         const customersList = await connection.query(`
             SELECT * FROM customers;

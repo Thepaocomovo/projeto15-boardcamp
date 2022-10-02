@@ -11,7 +11,7 @@ const getGames = async (req, res) => {
             SELECT games.*, categories.name as "categoryName" 
             FROM games JOIN categories 
             ON games."categoryId" = categories.id 
-            WHERE games.name LIKE $1;`, [`${name}%`]
+            WHERE games.name LIKE 'costumerCPF';`
             );
             return res.status(StatusCodes.OK).send(filteredGames.rows);
         } catch (error) {

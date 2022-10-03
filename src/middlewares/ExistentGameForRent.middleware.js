@@ -7,7 +7,6 @@ import connection from "../database/PgConnection.js";
 
 const existentGame = async (req, res, next) => {
     const { daysRented, gameId } = req.body;
-    let originalPrice;
     let existentGame;
 
     try {
@@ -42,7 +41,7 @@ const existentGame = async (req, res, next) => {
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
-    originalPrice = daysRented * existentGame.rows[0].pricePerDay
+    const originalPrice = daysRented * existentGame.rows[0].pricePerDay
     res.locals.originalPrice = originalPrice
     next()
 };

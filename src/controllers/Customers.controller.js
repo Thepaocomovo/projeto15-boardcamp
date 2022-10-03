@@ -91,7 +91,6 @@ const createCustomers = async (req, res) => {
         console.log(error);
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
-    return res.sendStatus(StatusCodes.CREATED);
 };
 
 const updateUser = async (req, res) => {

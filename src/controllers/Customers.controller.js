@@ -69,9 +69,7 @@ const createCustomers = async (req, res) => {
 const updateUser = async (req, res) => {
     const { name, phone, cpf, birthday } = res.locals.newCustomer;
     const id = req.params.id;
-    
 
-    console.log(name, phone, cpf, birthday)
     try {
         await connection.query(`
             UPDATE customers 
@@ -84,9 +82,6 @@ const updateUser = async (req, res) => {
         console.log(error);
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
-    
-    
-    return res.sendStatus(422);
 }
 
 export { getCustomers, getCustomersById, createCustomers, updateUser }

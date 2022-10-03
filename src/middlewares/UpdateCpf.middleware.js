@@ -6,7 +6,7 @@ const CPFpossibleUpdate = async (req, res, next) => {
     const cpf = res.locals.newCustomer.cpf;
     const id = req.params.id;
     if(!Number(id)){
-        return res.sendStatus(StatusCodes.BAD_REQUEST)
+        return res.sendStatus(StatusCodes.BAD_REQUEST);
     }
 
     try {

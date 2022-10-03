@@ -18,7 +18,7 @@ const getRentals = async (req, res) => {
                     categories.name as "categoryName"
                 FROM rentals
                 JOIN customers
-                ON rentals."gameId" = customers.id
+                ON rentals."customerId" = customers.id
                 JOIN games
                 ON rentals."gameId" = games.id
                 JOIN categories
@@ -33,7 +33,7 @@ const getRentals = async (req, res) => {
                         id: v.id,
                         customerId: v.customerId,
                         gameId: v.gameId,
-                        rentDate: v.rentDate,
+                        rentDate:  dayjs(v.rentDate).format('YYYY-MM-DD'),
                         daysRented: v.daysRented,
                         returnDate: v.returnDate,
                         originalPrice: v.originalPrice,
@@ -51,7 +51,6 @@ const getRentals = async (req, res) => {
                     }
                 )
             })
-
             return res.status(StatusCodes.CREATED).send(rentalsList);
         } catch (error) {
             console.log(error);
@@ -73,7 +72,7 @@ const getRentals = async (req, res) => {
                     categories.name as "categoryName"
                 FROM rentals
                 JOIN customers
-                ON rentals."gameId" = customers.id
+                ON rentals."customerId" = customers.id
                 JOIN games
                 ON rentals."gameId" = games.id
                 JOIN categories
@@ -81,14 +80,13 @@ const getRentals = async (req, res) => {
                 WHERE rentals."gameId" = $1
                 ;`, [`${req.query.gameId}`]
             )
-
             rentalsList = rentalsList.rows.map((v) => {
                 return (
                     {
                         id: v.id,
                         customerId: v.customerId,
                         gameId: v.gameId,
-                        rentDate: v.rentDate,
+                        rentDate: dayjs(v.rentDate).format('YYYY-MM-DD'),
                         daysRented: v.daysRented,
                         returnDate: v.returnDate,
                         originalPrice: v.originalPrice,
@@ -123,7 +121,7 @@ const getRentals = async (req, res) => {
                 categories.name as "categoryName"
             FROM rentals
             JOIN customers
-                ON rentals."gameId" = customers.id
+                ON rentals."customerId" = customers.id
             JOIN games
                 ON rentals."gameId" = games.id
             JOIN categories
@@ -136,7 +134,7 @@ const getRentals = async (req, res) => {
                     id: v.id,
                     customerId: v.customerId,
                     gameId: v.gameId,
-                    rentDate: v.rentDate,
+                    rentDate: dayjs(v.rentDate).format('YYYY-MM-DD'),
                     daysRented: v.daysRented,
                     returnDate: v.returnDate,
                     originalPrice: v.originalPrice,
@@ -228,7 +226,7 @@ const deleteRental = async (req, res) => {
             return res.sendStatus(StatusCodes.NOT_FOUND);
         }
         if (existentRental.rows[0].returnDate === null) {
-            res.sendStatus(StatusCodes.BAD_REQUEST);
+            return res.sendStatus(StatusCodes.BAD_REQUEST);
         }
     } catch (error) {
         console.log(error);

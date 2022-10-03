@@ -1,16 +1,31 @@
 import { StatusCodes } from "http-status-codes";
+import dayjs from "dayjs";
 
 import connection from "../database/PgConnection.js";
+
 const getCustomers = async (req, res) => {
     if(req.query.cpf) {
         const costumerCPF = req.query.cpf;
         try {
-            const costumer = await connection.query(`
+            let costumer = await connection.query(`
             SELECT *
             FROM customers
             WHERE cpf LIKE $1;`, [`${costumerCPF}%`]
             );
-            return res.status(StatusCodes.OK).send(costumer.rows);
+
+            costumer = costumer.rows.map((v) => {
+                return(
+                    {
+                    id: v.id,
+                    name: v.name,
+                    phone: v.phone,
+                    cpf: v.cpf,
+                    birthday: (dayjs(v.birthday).format('YYYY-MM-DD'))
+                }
+                )
+            })
+
+            return res.status(StatusCodes.OK).send(costumer);
         } catch (error) {
             console.log(error);
             return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -18,10 +33,21 @@ const getCustomers = async (req, res) => {
     }
 
     try {
-        const customersList = await connection.query(`
+        let customersList = await connection.query(`
             SELECT * FROM customers;
         `);
-        return res.status(StatusCodes.OK).send(customersList.rows)
+        customersList = customersList.rows.map((v) => {
+            return(
+                {
+                id: v.id,
+                name: v.name,
+                phone: v.phone,
+                cpf: v.cpf,
+                birthday: (dayjs(v.birthday).format('YYYY-MM-DD'))
+            }
+            )
+        })
+        return res.status(StatusCodes.OK).send(customersList)
     } catch (error) {
         console.log(error);
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -41,7 +67,9 @@ const getCustomersById = async (req, res) => {
         );
 
         if(costumer.rows.length < 1) return res.sendStatus(StatusCodes.NOT_FOUND);
-
+        const birthday = (dayjs(costumer.rows[0].birthday).format('YYYY-MM-DD'));
+        costumer.rows[0].birthday = birthday;
+        
         return res.status(StatusCodes.OK).send(costumer.rows);
     } catch (error) {
         console.log(error);

@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 
 import connection from "../database/PgConnection.js";
 
-
 const getRentals = async (req, res) => {
     if (req.query.customerId) {
         if (isNaN(Number(req.query.customerId))) {
@@ -191,4 +190,37 @@ const createRental = async (req, res) => {
     res.sendStatus(201);
 };
 
-export { getRentals, createRental };
+const closeRental = async (req, res) => {
+    const { id } = req.params;
+    const { rentDate, originalPrice, daysRented} = res.locals.existentRental;
+    let delayFee = 0
+    const time = dayjs(Date()).$d;    
+    const difference = time - rentDate;
+    const days = Math.floor(difference / (1000 * 3600 * 24));
+    const today = dayjs(Date()).format('YYYY-MM-DD')
+    if( days > daysRented) {
+        const delay = days - daysRented;
+        const fee = (originalPrice/daysRented)
+        delayFee = delay * fee;
+    }
+
+    console.log(delayFee)
+    console.log(today)
+
+
+    try {
+        await connection.query(`
+        UPDATE rentals 
+        SET "returnDate" = $1, "delayFee" = $2
+        WHERE id = $3;
+        `, [today, delayFee, id])
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+
+
+    res.sendStatus(StatusCodes.OK);
+};
+
+export { getRentals, createRental, closeRental };

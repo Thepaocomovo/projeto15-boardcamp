@@ -5,11 +5,115 @@ import connection from "../database/PgConnection.js";
 
 
 const getRentals = async (req, res) => {
+    if (req.query.customerId) {
+        if (isNaN(Number(req.query.customerId))) {
+            return res.sendStatus(StatusCodes.BAD_REQUEST);
+        }
 
+        try {
+            let rentalsList = await connection.query(`
+                SELECT 
+                    rentals.*, 
+                    customers.name, 
+                    games.name as "gamesName", games."categoryId", 
+                    categories.name as "categoryName"
+                FROM rentals
+                JOIN customers
+                ON rentals."gameId" = customers.id
+                JOIN games
+                ON rentals."gameId" = games.id
+                JOIN categories
+                ON games."categoryId" = categories.id
+                WHERE rentals."customerId" = $1
+                ;`, [`${req.query.customerId}`]
+            )
 
+            rentalsList = rentalsList.rows.map((v) => {
+                return (
+                    {
+                        id: v.id,
+                        customerId: v.customerId,
+                        gameId: v.gameId,
+                        rentDate: v.rentDate,
+                        daysRented: v.daysRented,
+                        returnDate: v.returnDate,
+                        originalPrice: v.originalPrice,
+                        delayFee: v.delayFee,
+                        customer: {
+                            id: v.customerId,
+                            name: v.name
+                        },
+                        game: {
+                            id: v.gameId,
+                            name: v.gamesName,
+                            categoryId: v.categoryId,
+                            categoryName: v.categoryName
+                        }
+                    }
+                )
+            })
 
+            return res.status(StatusCodes.CREATED).send(rentalsList);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    if (req.query.gameId) {
+        if (isNaN(Number(req.query.gameId))) {
+            return res.sendStatus(StatusCodes.BAD_REQUEST);
+        }
 
+        try {
+            let rentalsList = await connection.query(`
+                SELECT 
+                    rentals.*, 
+                    customers.name, 
+                    games.name as "gamesName", games."categoryId", 
+                    categories.name as "categoryName"
+                FROM rentals
+                JOIN customers
+                ON rentals."gameId" = customers.id
+                JOIN games
+                ON rentals."gameId" = games.id
+                JOIN categories
+                ON games."categoryId" = categories.id
+                WHERE rentals."gameId" = $1
+                ;`, [`${req.query.gameId}`]
+            )
+
+            rentalsList = rentalsList.rows.map((v) => {
+                return (
+                    {
+                        id: v.id,
+                        customerId: v.customerId,
+                        gameId: v.gameId,
+                        rentDate: v.rentDate,
+                        daysRented: v.daysRented,
+                        returnDate: v.returnDate,
+                        originalPrice: v.originalPrice,
+                        delayFee: v.delayFee,
+                        customer: {
+                            id: v.customerId,
+                            name: v.name
+                        },
+                        game: {
+                            id: v.gameId,
+                            name: v.gamesName,
+                            categoryId: v.categoryId,
+                            categoryName: v.categoryName
+                        }
+                    }
+                )
+            })
+
+            return res.status(StatusCodes.CREATED).send(rentalsList);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     try {
         let rentalsList = await connection.query(`
@@ -20,11 +124,11 @@ const getRentals = async (req, res) => {
                 categories.name as "categoryName"
             FROM rentals
             JOIN customers
-            ON rentals."gameId" = customers.id
+                ON rentals."gameId" = customers.id
             JOIN games
-            ON rentals."gameId" = games.id
+                ON rentals."gameId" = games.id
             JOIN categories
-            ON games."categoryId" = categories.id;
+                ON games."categoryId" = categories.id;
         `)
 
         rentalsList = rentalsList.rows.map((v) => {
@@ -86,6 +190,5 @@ const createRental = async (req, res) => {
 
     res.sendStatus(201);
 };
-
 
 export { getRentals, createRental };

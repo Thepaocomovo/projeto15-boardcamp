@@ -34,7 +34,7 @@ const existentGame = async (req, res, next) => {
         rentedGames = rentedGames.rows.filter((rental) => rental.returnDate === null)
 
         if(rentedGames.length >= existentGame.rows[0].stockTotal) {
-            res.sendStatus(StatusCodes.BAD_REQUEST)
+            return res.sendStatus(StatusCodes.BAD_REQUEST)
         }
 
     } catch (error) {

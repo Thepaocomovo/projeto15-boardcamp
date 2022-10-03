@@ -165,8 +165,6 @@ const getRentals = async (req, res) => {
 const createRental = async (req, res) => {
     const { customerId, gameId, daysRented } = req.body;
     const time = dayjs(Date()).format('YYYY-MM-DD');
-    console.log(time);
-    console.log(typeof (time))
     const originalPrice = res.locals.originalPrice;
 
     if (isNaN(Number(daysRented)) || daysRented < 1) {
@@ -174,53 +172,81 @@ const createRental = async (req, res) => {
     }
 
     try {
-        console.log(time);
         await connection.query(`
             INSERT INTO rentals
             ("customerId", "gameId", "daysRented", "rentDate", "returnDate", "originalPrice", "delayFee")
             VALUES ($1, $2, $3, $4, $5, $6, $7);
         `, [customerId, gameId, daysRented, time, null, originalPrice, null]
         )
-        console.log(time);
     } catch (error) {
         console.log(error);
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
 };
 
 const closeRental = async (req, res) => {
     const { id } = req.params;
-    const { rentDate, originalPrice, daysRented} = res.locals.existentRental;
+    const { rentDate, originalPrice, daysRented } = res.locals.existentRental;
     let delayFee = 0
-    const time = dayjs(Date()).$d;    
+    const time = dayjs(Date()).$d;
     const difference = time - rentDate;
     const days = Math.floor(difference / (1000 * 3600 * 24));
     const today = dayjs(Date()).format('YYYY-MM-DD')
-    if( days > daysRented) {
+    if (days > daysRented) {
         const delay = days - daysRented;
-        const fee = (originalPrice/daysRented)
+        const fee = (originalPrice / daysRented)
         delayFee = delay * fee;
     }
-
-    console.log(delayFee)
-    console.log(today)
-
 
     try {
         await connection.query(`
         UPDATE rentals 
         SET "returnDate" = $1, "delayFee" = $2
         WHERE id = $3;
-        `, [today, delayFee, id])
+        `, [today, delayFee, id]
+        );
     } catch (error) {
         console.log(error);
         return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
-
-    res.sendStatus(StatusCodes.OK);
+    return res.sendStatus(StatusCodes.OK);
 };
 
-export { getRentals, createRental, closeRental };
+const deleteRental = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const existentRental = await connection.query(`
+            SELECT * FROM rentals WHERE id = $1
+        `, [id]
+        );
+
+        if (existentRental.rows.length < 1) {
+            return res.sendStatus(StatusCodes.NOT_FOUND);
+        }
+        if (existentRental.rows[0].returnDate === null) {
+            res.sendStatus(StatusCodes.BAD_REQUEST);
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+
+    try {
+        await connection.query(`
+            DELETE FROM rentals WHERE id = $1
+            `, [id]
+        );
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+
+    return res.sendStatus(StatusCodes.OK);
+}
+
+export { getRentals, createRental, closeRental, deleteRental };

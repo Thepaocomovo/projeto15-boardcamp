@@ -24,7 +24,7 @@ const getCustomers = async (req, res) => {
         return res.status(StatusCodes.OK).send(customersList.rows)
     } catch (error) {
         console.log(error);
-        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 }
 
@@ -61,9 +61,9 @@ const createCustomers = async (req, res) => {
         return res.sendStatus(StatusCodes.CREATED)
     } catch (error) {
         console.log(error);
-        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
-    res.sendStatus(StatusCodes.CREATED);
+    return res.sendStatus(StatusCodes.CREATED);
 };
 
 const updateUser = async (req, res) => {

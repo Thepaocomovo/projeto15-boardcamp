@@ -16,10 +16,10 @@ const createCategories = async (req, res) => {
     const { name } = res.locals.newCategorie;
     try {
         await connection.query(`INSERT INTO categories (name) VALUES ($1);`, [name]);
-        res.sendStatus(StatusCodes.CREATED);
+        return res.sendStatus(StatusCodes.CREATED);
     } catch (error) {
         console.log(error);
-        res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
     }
 };
 

@@ -11,6 +11,6 @@ const router = express.Router();
 router.get("/rentals", rentalsController.getRentals);
 router.post("/rentals", existentCustomerId, existentGame, rentalsController.createRental);
 router.post("/rentals/:id/return", avaiableRentalToClose, rentalsController.closeRental)
-// router.put("/rentals/:id", validCustomer, CPFpossibleUpdate, customersController.updateUser);
+router.delete("/rentals/:id",  rentalsController.deleteRental);
 
 export default router;
